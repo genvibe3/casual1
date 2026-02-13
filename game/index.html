@@ -5,13 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>한강 러닝 - 헌팅남 피하기 게임</title>
 
-    <!-- Google Font - Press Start 2P -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
-    <!-- Phaser 3 with Matter.js -->
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
+    <!-- PixiJS 7.x -->
+    <script src="https://pixijs.download/release/pixi.js"></script>
 
     <style>
         * {
@@ -21,9 +16,9 @@
         }
 
         body {
-            font-family: 'Press Start 2P', cursive;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
-            background: #000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -32,19 +27,300 @@
 
         #game-container {
             position: relative;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 50px rgba(102, 126, 234, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
         }
 
         canvas {
             display: block;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
+        }
+
+        /* UI 오버레이 */
+        #game-ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #score-display {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .ui-item {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5); }
+            50% { box-shadow: 0 4px 25px rgba(102, 126, 234, 0.9); }
+        }
+
+        .ui-item span {
+            color: #00ffff;
+            font-size: 20px;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        /* 화면 오버레이 */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .screen.hidden {
+            display: none;
+        }
+
+        .screen-content {
+            text-align: center;
+            color: white;
+            padding: 40px;
+            background: rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.8);
+            max-width: 600px;
+        }
+
+        .screen-content h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 1);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            margin-bottom: 30px;
+            color: #00ffff;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+
+        .controls-info {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+        }
+
+        .control-item {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .key {
+            display: inline-block;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: white;
+            border: 2px solid #00ffff;
+            box-shadow: 0 3px 15px rgba(0, 255, 255, 0.5);
+            margin: 0 5px;
+        }
+
+        .game-btn {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            border: 2px solid #00ffff;
+            padding: 15px 50px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 25px rgba(0, 255, 255, 0.5);
+            pointer-events: auto;
+        }
+
+        .game-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 35px rgba(0, 255, 255, 0.8);
+        }
+
+        .game-btn:active {
+            transform: translateY(0);
+        }
+
+        .game-btn.secondary {
+            background: linear-gradient(145deg, #888, #666);
+            border-color: #fff;
+        }
+
+        .best-score {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+
+        .best-score span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .final-stats {
+            margin: 30px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .stat-label {
+            font-size: 18px;
+            color: #ccc;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 1);
+        }
+
+        #new-record {
+            margin: 20px 0;
+            font-size: 24px;
+            color: #00ff00;
+            text-shadow: 0 0 20px #00ff00;
+            animation: blink 1s ease-in-out infinite;
+        }
+
+        #new-record.hidden {
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
     </style>
 </head>
 <body>
-    <div id="game-container"></div>
+    <div id="game-container">
+        <!-- PixiJS 캔버스가 여기에 삽입됩니다 -->
 
-    <script src="js/phaser-game.js"></script>
+        <!-- 게임 UI 오버레이 -->
+        <div id="game-ui">
+            <div id="score-display">
+                <div class="ui-item">거리: <span id="distance">0</span>m</div>
+                <div class="ui-item">💰 코인: <span id="coins">0</span></div>
+                <div class="ui-item">🎂 나이: <span id="age">20</span>세</div>
+                <div class="ui-item">점수: <span id="score">0</span></div>
+            </div>
+        </div>
+
+        <!-- 시작 화면 -->
+        <div id="start-screen" class="screen">
+            <div class="screen-content">
+                <h1>🏃‍♀️ 한강 러닝</h1>
+                <p class="subtitle">한강 공원을 달려라! 헌팅남을 피하고 코인을 모아!</p>
+                <div class="controls-info">
+                    <div class="control-item">
+                        <span class="key">스페이스바</span> 또는 <span class="key">↑</span> - 점프
+                    </div>
+                    <div class="control-item">
+                        <span class="key">공중에서 한번 더!</span> - 2단 점프 (회전!)
+                    </div>
+                    <div class="control-item">
+                        <span class="key">↓</span> - 슬라이드
+                    </div>
+                    <div class="control-item" style="margin-top: 15px; color: #00ffff; font-size: 14px;">
+                        💡 헌팅남들이 말을 걸어요! 피하세요!<br>
+                        💊 콜라겐으로 나이를 회복하세요! (2단 점프로만!)
+                    </div>
+                </div>
+                <button id="start-btn" class="game-btn">게임 시작</button>
+                <div class="best-score">최고 기록: <span id="best-distance">0</span>m</div>
+            </div>
+        </div>
+
+        <!-- 게임 오버 화면 -->
+        <div id="gameover-screen" class="screen hidden">
+            <div class="screen-content">
+                <h1>💥 GAME OVER</h1>
+                <div class="final-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">거리</span>
+                        <span class="stat-value" id="final-distance">0</span>m
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">💰 코인</span>
+                        <span class="stat-value" id="final-coins">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">🎂 최종 나이</span>
+                        <span class="stat-value" id="final-age">20</span>세
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">점수</span>
+                        <span class="stat-value" id="final-score">0</span>
+                    </div>
+                </div>
+                <div id="new-record" class="hidden">🎉 새로운 기록!</div>
+                <button id="restart-btn" class="game-btn">다시 시작</button>
+            </div>
+        </div>
+
+        <!-- 일시정지 화면 -->
+        <div id="pause-screen" class="screen hidden">
+            <div class="screen-content">
+                <h1>⏸️ 일시정지</h1>
+                <button id="resume-btn" class="game-btn">계속하기</button>
+                <button id="quit-btn" class="game-btn secondary">메인으로</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/pixigame.js"></script>
 </body>
 </html>
