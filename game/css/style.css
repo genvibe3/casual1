@@ -1,0 +1,280 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    background: linear-gradient(135deg, #4299E1 0%, #48BB78 50%, #F6E05E 100%);
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #87ceeb 0%, #f0e68c 100%);
+}
+
+/* 게임 UI */
+#game-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+#score-display {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.ui-item {
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.ui-item span {
+    color: #ffd700;
+    font-size: 20px;
+}
+
+/* 화면 오버레이 */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    animation: fadeIn 0.3s ease;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+.screen-content {
+    text-align: center;
+    color: white;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    max-width: 500px;
+}
+
+.screen-content h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.subtitle {
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* 컨트롤 정보 */
+.controls-info {
+    margin: 30px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.control-item {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.key {
+    display: inline-block;
+    background: linear-gradient(145deg, #555, #333);
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: #ffd700;
+    border: 2px solid #777;
+    box-shadow: 0 3px 0 #222, 0 4px 10px rgba(0, 0, 0, 0.5);
+    margin: 0 5px;
+}
+
+/* 버튼 스타일 */
+.game-btn {
+    background: linear-gradient(145deg, #4299E1, #48BB78);
+    color: white;
+    border: none;
+    padding: 15px 50px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    margin: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(66, 153, 225, 0.5);
+    pointer-events: auto;
+}
+
+.game-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(72, 187, 120, 0.7);
+}
+
+.game-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(66, 153, 225, 0.5);
+}
+
+.game-btn.secondary {
+    background: linear-gradient(145deg, #888, #666);
+}
+
+.game-btn.secondary:hover {
+    box-shadow: 0 8px 20px rgba(100, 100, 100, 0.6);
+}
+
+/* 최고 기록 */
+.best-score {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #ffd700;
+}
+
+.best-score span {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* 게임 오버 통계 */
+.final-stats {
+    margin: 30px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.stat-label {
+    font-size: 18px;
+    color: #ccc;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #ffd700;
+}
+
+#new-record {
+    margin: 20px 0;
+    font-size: 24px;
+    color: #00ff00;
+    text-shadow: 0 0 20px #00ff00;
+    animation: blink 1s ease-in-out infinite;
+}
+
+#new-record.hidden {
+    display: none;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* 모바일 최적화 */
+@media (max-width: 768px) {
+    .screen-content {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    .screen-content h1 {
+        font-size: 36px;
+    }
+
+    #score-display {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ui-item {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+
+    .ui-item span {
+        font-size: 16px;
+    }
+
+    .game-btn {
+        padding: 12px 40px;
+        font-size: 18px;
+    }
+}
