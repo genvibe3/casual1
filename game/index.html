@@ -4,80 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>한강 러닝 - 헌팅남 피하기 게임</title>
-    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Google Font - Press Start 2P -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <!-- Phaser 3 with Matter.js -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            overflow: hidden;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #game-container {
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        canvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+    </style>
 </head>
 <body>
-    <div id="game-container">
-        <!-- 게임 화면 -->
-        <canvas id="game-canvas"></canvas>
+    <div id="game-container"></div>
 
-        <!-- 게임 UI 오버레이 -->
-        <div id="game-ui">
-            <div id="score-display">
-                <div class="ui-item">거리: <span id="distance">0</span>m</div>
-                <div class="ui-item">💰 코인: <span id="coins">0</span></div>
-                <div class="ui-item">나이: <span id="age">20</span>세</div>
-                <div class="ui-item">점수: <span id="score">0</span></div>
-            </div>
-        </div>
-
-        <!-- 시작 화면 -->
-        <div id="start-screen" class="screen">
-            <div class="screen-content">
-                <h1>🏃‍♀️ 한강 러닝</h1>
-                <p class="subtitle">한강 공원을 달려라! 헌팅남을 피하고 코인을 모아!</p>
-                <div class="controls-info">
-                    <div class="control-item">
-                        <span class="key">스페이스바</span> 또는 <span class="key">↑</span> - 점프
-                    </div>
-                    <div class="control-item">
-                        <span class="key">공중에서 한번 더!</span> - 2단 점프 (회전!)
-                    </div>
-                    <div class="control-item">
-                        <span class="key">↓</span> - 슬라이드
-                    </div>
-                    <div class="control-item" style="margin-top: 15px; color: #FFD700; font-size: 14px;">
-                        💡 헌팅남들이 말을 걸어요! 피하세요!
-                    </div>
-                </div>
-                <button id="start-btn" class="game-btn">게임 시작</button>
-                <div class="best-score">최고 기록: <span id="best-distance">0</span>m</div>
-            </div>
-        </div>
-
-        <!-- 게임 오버 화면 -->
-        <div id="gameover-screen" class="screen hidden">
-            <div class="screen-content">
-                <h1>💥 GAME OVER</h1>
-                <div class="final-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">거리</span>
-                        <span class="stat-value" id="final-distance">0</span>m
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">💰 코인</span>
-                        <span class="stat-value" id="final-coins">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">점수</span>
-                        <span class="stat-value" id="final-score">0</span>
-                    </div>
-                </div>
-                <div id="new-record" class="hidden">🎉 새로운 기록!</div>
-                <button id="restart-btn" class="game-btn">다시 시작</button>
-            </div>
-        </div>
-
-        <!-- 일시정지 화면 -->
-        <div id="pause-screen" class="screen hidden">
-            <div class="screen-content">
-                <h1>⏸️ 일시정지</h1>
-                <button id="resume-btn" class="game-btn">계속하기</button>
-                <button id="quit-btn" class="game-btn secondary">메인으로</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="js/game.js"></script>
+    <script src="js/phaser-game.js"></script>
 </body>
 </html>
